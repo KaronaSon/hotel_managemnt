@@ -55,7 +55,7 @@
 
 <script setup>
 definePageMeta({
-  layout: false
+  layout: 'non-header',
 })
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '~/stores/user'

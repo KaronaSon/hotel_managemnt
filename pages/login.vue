@@ -55,7 +55,7 @@
 
 <script setup>
 definePageMeta({
-  layout: false,
+  layout: 'non-header',
 })
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '~/stores/user'
@@ -67,9 +67,17 @@ const error = ref('')
 const userStore = useUserStore()
 const router = useRouter()
 
+// Automatically redirect if already authenticated
+onMounted(() => {
+  if (userStore.isAuthenticated) {
+    router.push('/') // Redirect to the dashboard (index)
+  }
+})
+
 function handleManualLogin() {
-  if (userStore.login(email.value, password.value)) {
-    router.push('/')
+  const success = userStore.login(email.value, password.value)
+  if (success) {
+    router.push('/') // Redirect to the dashboard (index)
   } else {
     error.value = 'Invalid email or password'
   }
@@ -84,7 +92,7 @@ function handleGoogleLogin() {
     (googleUser) => {
       const profile = googleUser.getBasicProfile()
       userStore.setGoogleUser(profile.getEmail())
-      router.push('/dashboard')
+      router.push('/') // Redirect to the dashboard (index)
     },
     (err) => {
       error.value = 'Google login failed'
@@ -92,21 +100,6 @@ function handleGoogleLogin() {
     }
   )
 }
-
-onMounted(() => {
-  const script = document.createElement('script')
-  script.src = 'https://apis.google.com/js/api.js'
-  script.async = true
-  script.onload = () => {
-    window.gapi.load('auth2', () => {
-      window.gapi.auth2.init({
-        client_id: 'YOUR_GOOGLE_CLIENT_ID', // Replace with your Google Client ID
-        scope: 'profile email',
-      })
-    })
-  }
-  document.body.appendChild(script)
-})
 </script>
 
 <style scoped>
