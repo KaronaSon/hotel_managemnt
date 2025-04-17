@@ -5,7 +5,7 @@
         <slot /> <!-- Page content goes here -->
       </main>
       <footer class="bg-gray-200 p-4 text-center mt-8">
-        <p>© 2025 Horizon Hotel. All rights reserved.</p>
+        <p>© 2025 Sky Castle Hotel. All rights reserved.</p>
       </footer>
     </div>
   </template>
