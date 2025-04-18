@@ -1,34 +1,506 @@
 export default defineEventHandler(async (event) => {
-    const rooms = [];
-    const generatorRooms = (type, count, idOffset) => {
-      const baseRoom = {
-        'Single Room': { id: '101', name: 'Single Room', status: 'Available', price: 80, description: 'A cozy room for solo travelers.', photo: 'https://i.pinimg.com/474x/d1/39/28/d13928b81d86c22fa1bdcbd6da92baf4.jpg', rating: 4.5 },
-        'Double Room': { id: '106', name: 'Double Room', status: 'Booked', price: 120, description: 'Perfect for couples with a queen bed.', photo: 'https://i.pinimg.com/474x/26/a8/f5/26a8f5d43e2d515d87d2ff3a21957716.jpg', rating: 4.7 },
-        'Suite': { id: '111', name: 'Suite', status: 'Available', price: 200, description: 'Spacious suite with modern amenities.', photo: 'https://i.pinimg.com/474x/4b/ac/9b/4bac9b6565d96e8867ee0e2cf5c074a7.jpg', rating: 4.0 },
-        'Family Room': { id: '116', name: 'Family Room', status: 'Available', price: 150, description: 'Roomy space for families with extra beds.', photo: 'https://i.pinimg.com/474x/38/80/98/3880987a263d258abf0c92147a707969.jpg', rating: 4.6 },
-        'Deluxe Suite': { id: '121', name: 'Deluxe Suite', status: 'Booked', price: 300, description: 'Upscale suite with luxury features.', photo: 'https://i.pinimg.com/474x/98/78/cb/9878cb966173e83b5892c4152f354fff.jpg', rating: 3.0 },
-        'Presidential Suite': { id: '126', name: 'Presidential Suite', status: 'Available', price: 500, description: 'A luxurious suite with panoramic views.', photo: 'https://i.pinimg.com/474x/34/f4/1e/34f41e1e0c6c74b29c6e315779dc7ca8.jpg', rating: 5.0 },
-        'Economy Room': { id: '131', name: 'Economy Room', status: 'Available', price: 60, description: 'Affordable comfort with essentials.', photo: 'https://i.pinimg.com/474x/0c/31/1c/0c311c024a18ba0807893faa2367ed91.jpg', rating: 4.2 },
-        'Luxury Room': { id: '136', name: 'Luxury Room', status: 'Booked', price: 250, description: 'Elegant room with high-end furnishings.', photo: 'https://i.pinimg.com/474x/7e/4d/61/7e4d6180d76735555cd4741e2df5f553.jpg', rating: 3.9 },
-        'Standard Room': { id: '141', name: 'Standard Room', status: 'Available', price: 90, description: 'Simple and cozy for short stays.', photo: 'https://i.pinimg.com/474x/28/fb/ec/28fbec3be422fd862e941bafc8ea3ac1.jpg', rating: 4.1 },
-        'Penthouse Suite': { id: '146', name: 'Penthouse Suite', status: 'Available', price: 700, description: 'Top-floor luxury with a private terrace.', photo: 'https://i.pinimg.com/474x/99/a3/47/99a347236f145e322259dea1bd872242.jpg', rating: 3.0 },
-      }[type];
-      for(let i=0; i < count; i++){
-        const newRoom = { ...baseRoom};
-        newRoom.id = '${parseInt(baseRoom.id) + i + idOffset}';
-        newRoom.status = Math.random() < 0.5 ? 'Available' : 'Booked';
-        rooms.push(newRoom);
+  const rooms = [];
+
+  const baseRooms = {
+    'Single Room': [
+      {
+        id: 101,
+        name: 'Single Room',
+        price: 80,
+        description: 'A cozy room for solo travelers.',
+        photo: 'https://i.pinimg.com/474x/d1/39/28/d13928b81d86c22fa1bdcbd6da92baf4.jpg',
+        rating: 4.5,
+        category: 'Single Room',
+      },
+      {
+        id: 102,
+        name: 'Single Room',
+        price: 90,
+        description: 'A room with a single bed that is intended for one person to sleep in.',
+        photo: 'https://i.pinimg.com/474x/2e/b3/17/2eb317fe47d7cc314c66e3086d9567ec.jpg',
+        rating: 5.0,
+        category: 'Single Room',
+      },
+      {
+        id: 103,
+        name: 'Single Room',
+        price: 90,
+        description: 'It is occupancy(SRO) housing, and rooming houses was and largely, still is public policy.',
+        photo: 'https://i.pinimg.com/474x/2e/a8/49/2ea849b8e37fef632e2aade5d4bd6d17.jpg',
+        rating: 5.0,
+        category: 'Single Room',
+      },
+      {
+        id: 104,
+        name: 'Single Room',
+        price: 80,
+        description: 'This size should accommodate a single bed and some basic furniture like a bedside table and a wardrobe.',
+        photo: 'https://i.pinimg.com/474x/14/ec/b6/14ecb6037f5544c76afdea7e9331789c.jpg',
+        rating: 3.0,
+        category: 'Single Room',
+      },
+      {
+        id: 105,
+        name: 'Single Room',
+        price: 85,
+        description: 'A single room is designed for one occupant has one bed-generally a double or queen bed',
+        photo: 'https://i.pinimg.com/474x/d3/9b/55/d39b55ef88cfa2f14bc7e06e14b327fe.jpg',
+        rating: 4.0,
+        category: 'Single Room',
       }
-    };
-    generatorRooms('Single Room', 5, 0);
-    generatorRooms('Double Room', 5, 5);   
-    generatorRooms('Suite', 5, 10);
-    generatorRooms('Family Room', 5, 15);
-    generatorRooms('Deluxe Suite', 5, 20);
-    generatorRooms('Presidential Suite', 5, 25);
-    generatorRooms('Economy Room', 5, 30);
-    generatorRooms('Luxury Room', 5, 35);
-    generatorRooms('Standard Room', 5, 40);
-    generatorRooms('Penthouse Suite', 5, 45);
-    return rooms
-  });
+    ],
+    'Double Room': [
+      {
+        id: 106,
+        name: 'Double Room',
+        price: 120,
+        description: 'Perfect for couples with a queen bed.',
+        photo: 'https://i.pinimg.com/474x/26/a8/f5/26a8f5d43e2d515d87d2ff3a21957716.jpg',
+        rating: 4.7,
+        category: 'Double Room',
+      },
+      {
+        id: 107,
+        name: 'Double Room',
+        price: 120,
+        description: 'A double room in hotel typically refers to a room designed to accommodate more guests.',
+        photo: 'https://i.pinimg.com/474x/e8/c5/0c/e8c50ce285b0a5730a23db4e1459cd3b.jpg',
+        rating: 5.0,
+        category: 'Double Room',
+      },
+      {
+        id: 108,
+        name: 'Double Room',
+        price: 130,
+        description: 'It provides a comfortable and convenient accommodation option for couples, friends, or solo travelers seeking shared lodging.',
+        photo: 'https://i.pinimg.com/474x/38/bc/59/38bc5953475f026cdea2c8ba33331c93.jpg',
+        rating: 4.0,
+        category: 'Double Room',
+      },
+      {
+        id: 110,
+        name: 'Double Room',
+        price: 125,
+        description: 'It is all about hitting the sweet spot between catering to your ideal guests and appealing to a wide audience to keep those rooms filed and your revenue up.',
+        photo: 'https://i.pinimg.com/474x/1e/ad/dd/1eaddd1de173c8c57baf622bfe948d41.jpg',
+        rating: 3.0,
+        category: 'Double Room',
+      },
+      {
+        id: 111,
+        name: 'Double Room',
+        price: 120,
+        description: 'This flexibility is convenient for a variety of travelers, such as friends, couples, or colleagues on a trip.',
+        photo: 'https://i.pinimg.com/474x/39/24/9c/39249ce87938643b38d2c83ea89a7d39.jpg',
+        rating: 4.0,
+        category: 'Double Room',
+      }
+    ],
+    'Suite Room': [
+      {
+        id: 112,
+        name: 'Suite Room',
+        price: 200,
+        description: 'Spacious suite with modern amenities.',
+        photo: 'https://i.pinimg.com/474x/4b/ac/9b/4bac9b6565d96e8867ee0e2cf5c074a7.jpg',
+        rating: 4.0,
+        category: 'Suite Room',
+      },
+      {
+        id: 113,
+        name: 'Suite Room',
+        price: 220,
+        description: 'It is a premium accommodation offering more space and luxury than a standard hotel room.',
+        photo: 'https://i.pinimg.com/736x/1c/99/38/1c99389c2b9cfe99984110a101fe9cb3.jpg',
+        rating: 5.0,
+        category: 'Suite Room',
+      },
+      {
+        id: 114,
+        name: 'Suite Room',
+        price: 220,
+        description: 'Suite rooms differ in terms of their size and the facilities they provide.',
+        photo: 'https://i.pinimg.com/474x/91/26/7f/91267f7c0d820b7abbeab9bda4993178.jpg',
+        rating: 3.0,
+        category: 'Suite Room',
+      },
+      {
+        id: 115,
+        name: 'Suite Room',
+        price: 200,
+        description: 'Hotels may refer ot suites as a class of accommodations with more space than a typical hotel room.',
+        photo: 'https://i.pinimg.com/474x/e0/fa/3b/e0fa3ba83bac91efc66fa7c43391b7c6.jpg',
+        rating: 4.0,
+        category: 'Suite Room',
+      },
+      {
+        id: 116,
+        name: 'Suite Room',
+        price: 210,
+        description: 'Suites, may denote suites as one room with more space and furniture.',
+        photo: 'https://i.pinimg.com/474x/20/7b/b2/207bb24fa68b5154c4964c9eb6c8dcfe.jpg',
+        rating: 5.0,
+        category: 'Suite Room',
+      },
+    ],
+    'Family Room': [
+      {
+        id: 117,
+        name: 'Family Room',
+        price: 150,
+        description: 'Roomy space for families with extra beds.',
+        photo: 'https://i.pinimg.com/474x/38/80/98/3880987a263d258abf0c92147a707969.jpg',
+        rating: 4.0,
+        category: 'Family Room',
+      },
+      {
+        id: 118,
+        name: 'Family Room',
+        price: 150,
+        description: 'The family room is designed to be place where family and guests gather for group recreation like taking and more.',
+        photo: 'https://i.pinimg.com/474x/a8/57/b6/a857b69b8bdf8a9b3dfc77a86d15a4ca.jpg',
+        rating: 4.0,
+        category: 'Family Room',
+      },
+      {
+        id: 119,
+        name: 'Family Room',
+        price: 140,
+        description: 'It is specifically designed to accommodate families or larger groups of people.',
+        photo: 'https://i.pinimg.com/474x/e9/04/06/e904066351de35555525b681ea0c956e.jpg',
+        rating: 3.0,
+        category: 'Family Room',
+      },
+      {
+        id: 120,
+        name: 'Family Room',
+        price: 150,
+        description: 'It is sometimes also called a family suite, is a type of hotel room that is designed to accommodate families or larger groups of people.',
+        photo: 'https://i.pinimg.com/474x/cd/13/00/cd1300823d1a21b0a5f430bebedff811.jpg',
+        rating: 4.0,
+        category: 'Family Room',
+      },
+      {
+        id: 121,
+        name: 'Family Room',
+        price: 130,
+        description: 'A large room designed as a recreation center and informal gathering place for members of a family',
+        photo: 'https://i.pinimg.com/474x/8b/fa/4a/8bfa4a3a4ffc809d3c63ad2312f9c860.jpg',
+        rating: 4.0,
+        category: 'Family Room',
+      },
+    ],
+    'Deluxe Suite': [
+      {
+        id: 122,
+        name: 'Deluxe Suite',
+        price: 300,
+        description: 'Upscale suite with luxury features.',
+        photo: 'https://i.pinimg.com/474x/98/78/cb/9878cb966173e83b5892c4152f354fff.jpg',
+        rating: 3.0,
+        category: 'Deluxe Suite',
+      },
+      {
+        id: 123,
+        name: 'Deluxe Suite',
+        price: 320,
+        description: 'The space is larger, the services offered are more, and the guest enjoys a better view.',
+        photo: 'https://i.pinimg.com/736x/b4/4a/bb/b44abb48262c94f61e3212b0fa0bc799.jpg',
+        rating: 4.0,
+        category: 'Deluxe Suite',
+      },
+      {
+        id: 124,
+        name: 'Deluxe Suite',
+        price: 330,
+        description: 'A higher standard of accommodation compared to standard or superior rooms.',
+        photo: 'https://i.pinimg.com/474x/c4/01/53/c40153604a53696fee7d0a1fcd6f4128.jpg',
+        rating: 5.0,
+        category: 'Deluxe Suite',
+      },
+      {
+        id: 125,
+        name: 'Deluxe Suite',
+        price: 320,
+        description: 'In addition, as in standard rooms, the toilet and bathroom are also located in the suite.',
+        photo: 'https://i.pinimg.com/474x/9e/6c/d2/9e6cd290af807e41ecf11ab96b8151dc.jpg',
+        rating: 5.0,
+        category: 'Deluxe Suite',
+      },
+      {
+        id: 126,
+        name: 'Deluxe Suite',
+        price: 300,
+        description: 'It is separate living area, comfortable sofa, bathtub and rainfall shower experience will meet all your business and leisure requirements.',
+        photo: 'https://i.pinimg.com/474x/c9/f5/f6/c9f5f64620cc665cfd4796a5694519a2.jpg',
+        rating: 5.0,
+        category: 'Deluxe Suite',
+      },
+    ],
+    'Presidential Suite': [
+      {
+        id: 127,
+        name: 'Presidential Suite',
+        price: 500,
+        description: 'A luxurious suite with panoramic views.',
+        photo: 'https://i.pinimg.com/474x/34/f4/1e/34f41e1e0c6c74b29c6e315779dc7ca8.jpg',
+        rating: 5.0,
+        category: 'Presidential Suite',
+      },
+      {
+        id: 128,
+        name: 'Presidential Suite',
+        price: 450,
+        description: 'It has facilities such as a private conference room, while royal suites may have a formal reception room instead.',
+        photo: 'https://i.pinimg.com/474x/8e/d9/22/8ed9220d050f005b75cc2f0d4b86ea64.jpg',
+        rating: 4.0,
+        category: 'Presidential Suite',
+      },
+      {
+        id: 129,
+        name: 'Presidential Suite',
+        price: 520,
+        description: 'The presidential suite gained its name during the Woodrow Wilson presidency.',
+        photo: 'https://i.pinimg.com/474x/26/35/1a/26351a9c597addf403599bac00c2435d.jpg',
+        rating: 5.0,
+        category: 'Presidential Suite',
+      },
+      {
+        id: 130,
+        name: 'Presidential Suite',
+        price: 500,
+        description: 'The presidential suite perfectly accommodates the celebrity, diplomat or a high-profile business meeting.',
+        photo: 'https://i.pinimg.com/474x/27/f6/38/27f6388c0ce65a0bb7d4f7adc65df629.jpg',
+        rating: 5.0,
+        category: 'Presidential Suite',
+      },
+      {
+        id: 131,
+        name: 'Presidential Suite',
+        price: 540,
+        description: 'A collection of offices or room or suite used by top managers of a business or executives.',
+        photo: 'https://i.pinimg.com/474x/ba/91/1c/ba911c6f5f7915ae61cc9a376a1afae2.jpg',
+        rating: 4.0,
+        category: 'Presidential Suite',
+      },
+    ],
+    'Economy Room': [
+      {
+        id: 132,
+        name: 'Economy Room',
+        price: 300,
+        description: 'Affordable comfort with essentials.',
+        photo: 'https://i.pinimg.com/736x/41/21/9c/41219cb85eaf081b4fbd4552b1617987.jpg',
+        rating: 4.0,
+        category: 'Economy Room',
+      },
+      {
+        id: 133,
+        name: 'Economy Room',
+        price: 330,
+        description: 'It is perfect for guests who want to live comfortable but for less money.',
+        photo: 'https://i.pinimg.com/474x/b5/20/01/b5200122749be3d492a6d55893efe41c.jpg',
+        rating: 5.0,
+        category: 'Economy Room',
+      },
+      {
+        id: 134,
+        name: 'Economy Room',
+        price: 250,
+        description: 'Work discussion meeting',
+        photo: 'https://i.pinimg.com/474x/61/51/69/615169e9aef5f9cca7c6316bfab678bb.jpg',
+        rating: 3.0,
+        category: 'Economy Room',
+      },
+      {
+        id: 135,
+        name: 'Economy Room',
+        price: 280,
+        description: 'Work discussion meeting',
+        photo: 'https://i.pinimg.com/474x/49/12/73/491273ff3b4a39e4a6c8997654e147ea.jpg',
+        rating: 4.0,
+        category: 'Economy Room',
+      },
+      {
+        id: 136,
+        name: 'Economy Room',
+        price: 270,
+        description: 'Work discussion meeting',
+        photo: 'https://i.pinimg.com/474x/83/a1/08/83a10829180c36d824e1bc0b60d17d0c.jpg',
+        rating: 4.0,
+        category: 'Economy Room',
+      },
+    ],
+    'Luxury Room': [
+      {
+        id: 137,
+        name: 'Luxury Room',
+        price: 250,
+        description: 'Elegant room with high-end furnishings.',
+        photo: 'https://i.pinimg.com/474x/7e/4d/61/7e4d6180d76735555cd4741e2df5f553.jpg',
+        rating: 3.0,
+        category: 'Luxury Room',
+      },
+      {
+        id: 138,
+        name: 'Luxury Room',
+        price: 300,
+        description: 'All our guestrooms are elegantly furnished with handmade furniture include luxury en-suite facilities with complimentary amenities pack.',
+        photo: 'https://i.pinimg.com/736x/76/80/70/768070292de1bd3ffd0eb7b28c3e38eb.jpg',
+        rating: 4.0,
+        category: 'Luxury Room',
+      },
+      {
+        id: 139,
+        name: 'Luxury Room',
+        price: 350,
+        description: 'Lavish bathrooms with upscale features such as heated floors and soaking tubs.',
+        photo: 'https://i.pinimg.com/474x/3d/9e/49/3d9e49f449d71489bf83c0ddc5763058.jpg',
+        rating: 5.0,
+        category: 'Luxury Room',
+      },
+      {
+        id: 140,
+        name: 'Luxury Room',
+        price: 380,
+        description: 'Luxury hotels are designed to be a haven for senses and an oasis of luxury.',
+        photo: 'https://i.pinimg.com/474x/3b/39/bb/3b39bb5d858c8a48d8d629b633802fe9.jpg',
+        rating: 5.0,
+        category: 'Luxury Room',
+      },
+      {
+        id: 141,
+        name: 'Luxury Room',
+        price: 370,
+        description: 'The features that matter most in a hotel include luxury, comfort, and convenience.',
+        photo: 'https://i.pinimg.com/474x/e6/0d/cd/e60dcd35de9fe16a262b920c814aa643.jpg',
+        rating: 4.0,
+        category: 'Luxury Room',
+      },
+    ],
+    'Standard Room': [
+      {
+        id: 142,
+        name: 'Standard Room',
+        price: 90,
+        description: 'Simple and cozy for short stays.',
+        photo: 'https://i.pinimg.com/474x/28/fb/ec/28fbec3be422fd862e941bafc8ea3ac1.jpg',
+        rating: 4.0,
+        category: 'Standard Room',
+      },
+      {
+        id: 143,
+        name: 'Standard Room',
+        price: 90,
+        description: 'Basic rooms are also compact but slightly larger than a budget, with a window that provides a limited view.',
+        photo: 'https://i.pinimg.com/736x/6c/a4/f4/6ca4f4cd038f65e6a34389d6e0517be2.jpg',
+        rating: 5.0,
+        category: 'Standard Room',
+      },
+      {
+        id: 144,
+        name: 'Standard Room',
+        price: 100,
+        description: 'Standard rooms are more spacious and offer a city view for example.',
+        photo: 'https://i.pinimg.com/474x/d4/97/fb/d497fb2fe9011454bf272acd795ca040.jpg',
+        rating: 3.0,
+        category: 'Standard Room',
+      },
+      {
+        id: 145,
+        name: 'Standard Room',
+        price: 70,
+        description: 'Is any enclosed space within a number of walls to which entry is possible only via a door or other dividing structure.',
+        photo: 'https://i.pinimg.com/474x/81/8a/c7/818ac73677316abef829a761c162022e.jpg',
+        rating: 4.0,
+        category: 'Standard Room',
+      },
+      {
+        id: 146,
+        name: 'Standard Room',
+        price: 80,
+        description: 'The entrance connects it to either a passageway, another room, or the outdoors.',
+        photo: 'https://i.pinimg.com/474x/61/f9/79/61f979c5b85b086d374c1c13883769d5.jpg',
+        rating: 4.0,
+        category: 'Standard Room',
+      },
+    ],
+    'Penthouse Suite': [
+      {
+        id: 147,
+        name: 'Penthouse Suite',
+        price: 700,
+        description: 'Top-floor luxury with a private terrace.',
+        photo: 'https://i.pinimg.com/474x/99/a3/47/99a347236f145e322259dea1bd872242.jpg',
+        rating: 3.0,
+        category: 'Penthouse Suite',
+      },
+      {
+        id: 148,
+        name: 'Penthouse Suite',
+        price: 750,
+        description: 'A set of connected rooms, especially in a hotel.',
+        photo: 'https://i.pinimg.com/474x/06/df/02/06df021b3b34f7c8eb4a2d507d76cf94.jpg',
+        rating: 4.0,
+        category: 'Penthouse Suite',
+      },
+      {
+        id: 149,
+        name: 'Penthouse Suite',
+        price: 730,
+        description: 'These locations see highest demand for land.',
+        photo: 'https://i.pinimg.com/474x/4c/68/2e/4c682e89b67c783b050b7eb5b236ad51.jpg',
+        rating: 4.0,
+        category: 'Penthouse Suite',
+      },
+      {
+        id: 150,
+        name: 'Penthouse Suite',
+        price: 800,
+        description: 'The number of rooms in penthouses can vary greatly, typically ranging from 2 to 5 bedrooms, along with additional living spaces such as a living room, kitchen, and dining area.',
+        photo: 'https://i.pinimg.com/474x/91/62/af/9162affcbe97d5c3b16eef3da95df4f5.jpg',
+        rating: 5.0,
+        category: 'Penthouse Suite',
+      },
+      {
+        id: 151,
+        name: 'Penthouse Suite',
+        price: 850,
+        description: 'Penthouse apartments can also be situated on the corner of a building, providing 90 or more views of the surrounding skyline.',
+        photo: 'https://i.pinimg.com/474x/5d/18/6d/5d186d8e7e3fda97be56a09be1c23b00.jpg',
+        rating: 5.0,
+        category: 'Penthouse Suite',
+      },
+    ]
+  };
+
+  const generatorRooms = (type, count, idOffset) => {
+    const baseList = Array.isArray(baseRooms[type]) ? baseRooms[type] : [baseRooms[type]];
+    for (let i = 0; i < count; i++) {
+      const base = baseList[i % baseList.length]; // loop through multiple versions
+      const room = {
+        id: `${1000 + idOffset + i}`,
+        name: base.name,
+        status: Math.random() < 0.5 ? 'Available' : 'Booked',
+        price: base.price,
+        description: base.description,
+        photo: base.photo,
+        rating: base.rating
+      };
+      rooms.push(room);
+    }
+  };
+
+  generatorRooms('Single Room', 5, 0);
+  generatorRooms('Double Room', 5, 5);
+  generatorRooms('Suite Room', 5, 10);
+  generatorRooms('Family Room', 5, 15);
+  generatorRooms('Deluxe Suite', 5, 20);
+  generatorRooms('Presidential Suite', 5, 25);
+  generatorRooms('Economy Room', 5, 30);
+  generatorRooms('Luxury Room', 5, 35);
+  generatorRooms('Standard Room', 5, 40);
+  generatorRooms('Penthouse Suite', 5, 45);
+
+  return rooms;
+});

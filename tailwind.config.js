@@ -9,7 +9,17 @@ module.exports = {
     './nuxt.config.{js,ts}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        'scroll-right-to-left': {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+      },
+      animation: {
+        'scroll-right-to-left': 'scroll-right-to-left 30s linear infinite',
+      },
+    },
   },
   plugins: [],
 }
