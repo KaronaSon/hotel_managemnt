@@ -12,6 +12,7 @@
             class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="Enter your email"
             required
+            autocomplete="email"
           />
         </div>
         <div class="mb-6">
@@ -23,6 +24,7 @@
             class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="Enter your password"
             required
+            autocomplete="current-password"
           />
         </div>
         <button
@@ -67,17 +69,21 @@ const error = ref('')
 const userStore = useUserStore()
 const router = useRouter()
 
-// Automatically redirect if already authenticated
+// Clear form fields and error on mount
 onMounted(() => {
-  if (userStore.isAuthenticated) {
-    router.push('/') // Redirect to the dashboard (index)
+  email.value = ''
+  password.value = ''
+  error.value = ''
+  if (userStore.isAuthenticated && !userStore.isRegistering) {
+    router.push('/')
   }
 })
 
 function handleManualLogin() {
   const success = userStore.login(email.value, password.value)
   if (success) {
-    router.push('/') // Redirect to the dashboard (index)
+    error.value = ''
+    router.push('/')
   } else {
     error.value = 'Invalid email or password'
   }
@@ -92,7 +98,8 @@ function handleGoogleLogin() {
     (googleUser) => {
       const profile = googleUser.getBasicProfile()
       userStore.setGoogleUser(profile.getEmail())
-      router.push('/') // Redirect to the dashboard (index)
+      userStore.completeRegistration()
+      router.push('/login')
     },
     (err) => {
       error.value = 'Google login failed'

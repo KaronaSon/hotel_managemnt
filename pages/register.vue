@@ -12,6 +12,7 @@
             class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="Enter your email"
             required
+            autocomplete="email"
           />
         </div>
         <div class="mb-6">
@@ -23,6 +24,7 @@
             class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="Create a password"
             required
+            autocomplete="new-password"
           />
         </div>
         <button
@@ -48,7 +50,7 @@
       <p class="mt-4 text-center text-gray-600 text-lg">
         Already have an account? <NuxtLink to="/login" class="text-blue-500 hover:underline">Login here</NuxtLink>
       </p>
-      <p v-if="message" class="mt-2 text-center text-green-500 text-lg">{{ message }}</p>
+      <p v-if="message" class="mt-2 text-center" :class="{'text-green-500': !message.includes('failed'), 'text-red-500': message.includes('failed')}">{{ message }}</p>
     </div>
   </div>
 </template>
@@ -70,7 +72,10 @@ const router = useRouter()
 function handleManualRegister() {
   if (userStore.register(email.value, password.value)) {
     message.value = 'Registration successful! Redirecting to login...'
-    setTimeout(() => router.push('/login'), 2000)
+    userStore.completeRegistration()
+    router.push('/login')
+  } else {
+    message.value = 'Registration failed: Email already exists'
   }
 }
 
@@ -83,7 +88,9 @@ function handleGoogleLogin() {
     (googleUser) => {
       const profile = googleUser.getBasicProfile()
       userStore.setGoogleUser(profile.getEmail())
-      router.push('/')
+      message.value = 'Google registration successful! Redirecting to login...'
+      userStore.completeRegistration()
+      router.push('/login')
     },
     (err) => {
       message.value = 'Google registration failed'
@@ -99,7 +106,7 @@ onMounted(() => {
   script.onload = () => {
     window.gapi.load('auth2', () => {
       window.gapi.auth2.init({
-        client_id: 'YOUR_GOOGLE_CLIENT_ID',
+        client_id: 'YOUR_GOOGLE_CLIENT_ID', // Replace with actual client ID
         scope: 'profile email',
       })
     })

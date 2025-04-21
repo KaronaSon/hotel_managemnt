@@ -1,18 +1,18 @@
 <template>
-  <div class="container mx-auto p-6">
-    <!-- Layout: Main Content + Category Sidebar (Reversed) -->
-    <div class="flex flex-row-reverse gap-6">
+  <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
+    <!-- Layout: Main Content -->
+    <div class="flex flex-row-reverse gap-4 sm:gap-6">
       <!-- Main Content -->
       <main class="flex-1">
-        <!-- Tool bar container -->
-        <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <!-- Toolbar container -->
+        <div class="flex flex-wrap justify-between items-center gap-2 mb-6">
           <!-- Search -->
-          <div class="relative flex-1 min-w-[250px] max-w-md">
+          <div class="relative flex-1 min-w-[200px] max-w-md">
             <input
               type="text"
               v-model="searchQuery"
               placeholder="Search rooms..."
-              class="w-full rounded-full bg-gray-200 px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-300 font-sans"
+              class="w-full rounded-full bg-gray-100 px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-300 font-sans shadow-sm"
               aria-label="Search rooms"
             />
             <svg
@@ -32,10 +32,10 @@
           </div>
 
           <!-- Category Dropdown -->
-          <div class="relative inline-block text-left" ref="dropdownRef">
+          <div class="relative inline-block text-left w-full sm:w-auto" ref="dropdownRef">
             <button
-              @click.stop="showCategories = !showCategories"
-              class="text-gray-700 bg-gray-400 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-16 py-2.5 text-center inline-flex items-center dark:bg-gray-200 dark:hover:bg-gray-400 dark:focus:ring-gray-300"
+              @click.stop="toggleCategories"
+              class="w-full sm:w-auto text-gray-800 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-xl text-sm px-4 sm:px-6 py-2.5 text-center inline-flex items-center justify-center shadow-sm transition duration-300"
               type="button"
             >
               {{ selectedCategory }}
@@ -57,39 +57,25 @@
             </button>
 
             <!-- Dropdown menu -->
-            <transition name="fade-slide">
+            <transition name="fade">
               <div
                 v-show="showCategories"
-                class="absolute z-10 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-44 dark:bg-gray-100"
+                class="absolute z-20 mt-2 bg-white divide-y divide-gray-100 rounded-xl shadow-xl w-11/12 sm:w-96 min-w-[160px] max-w-[90%] max-w-full max-h-60 overflow-y-auto overflow-x-hidden right-0 left-auto will-change-opacity"
               >
-                <ul class="py-2 text-sm text-gray-700 dark:text-gray-800">
-                  <!-- All -->
+                <ul class="py-2 px-1 text-sm text-gray-800 font-sans">
                   <li
                     @click="handleCategoryClick('All')"
-                    :class="[
-                      'cursor-pointer px-4 py-3 text-base font-semibold rounded-t-lg',
-                      selectedCategory === 'All'
-                        ? 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 ring-2 ring-blue-300 shadow-sm'
-                        : 'hover:bg-indigo-700 text-blue-600'
-                    ]"
+                    class="cursor-pointer px-2 py-3 text-base font-semibold rounded-t-xl bg-gradient-to-r from-indigo-100 to-blue-100 text-indigo-700 ring-2 ring-indigo-300 shadow-sm hover:bg-indigo-50 text-wrap"
                   >
                     🌐 All Categories
                   </li>
-
-                  <!-- Divider -->
                   <li class="border-t border-gray-200 my-1"></li>
-
-                  <!-- Other categories -->
                   <li
                     v-for="category in categories"
                     :key="category"
                     @click="handleCategoryClick(category)"
-                    :class="[
-                      'cursor-pointer block px-4 py-2 rounded-md transition-all duration-200',
-                      category === selectedCategory
-                        ? 'bg-indigo-200 text-indigo-700 font-medium'
-                        : 'hover:bg-gray-300 dark:hover:bg-gray-600 dark:hover:text-white'
-                    ]"
+                    class="cursor-pointer block px-2 py-2 rounded-md transition-all duration-200 hover:bg-gray-100 text-wrap"
+                    :class="[category === selectedCategory ? 'bg-indigo-100 text-indigo-700 font-medium' : '']"
                   >
                     {{ category }}
                   </li>
@@ -100,12 +86,12 @@
         </div>
 
         <!-- States -->
-        <div v-if="loading" class="text-center mt-8">Loading rooms...</div>
-        <div v-else-if="error" class="text-center mt-8 text-red-500">{{ error }}</div>
-        <div v-else-if="filteredRooms.length === 0" class="text-center mt-8">No rooms found.</div>
+        <div v-if="loading" class="text-center mt-8 text-gray-600 text-lg">Loading rooms...</div>
+        <div v-else-if="error" class="text-center mt-8 text-red-500 text-lg">{{ error }}</div>
+        <div v-else-if="filteredRooms.length === 0" class="text-center mt-8 text-gray-600 text-lg">No rooms found.</div>
 
         <!-- Room Cards -->
-        <div v-else class="grid gap-6 mt-4 md:grid-cols-2 lg:grid-cols-3">
+        <div v-else class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           <RoomCard
             v-for="room in filteredRooms"
             :key="room.id"
@@ -115,7 +101,7 @@
             :photo="room.photo"
             :description="room.description"
             :rating="room.rating"
-            @click="$router.push('/room/${room.id}')"
+            @click="$router.push(`/room/${room.id}`)"
           />
         </div>
       </main>
@@ -123,22 +109,46 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+<script setup lang="ts">
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useUserStore } from '~/stores/user'
 import { useRouter } from 'vue-router'
 import RoomCard from '~/components/common/RoomCard.vue'
-import { nextTick } from 'vue'
+
+// Define Category type
+type Category =
+  | 'Single Room'
+  | 'Double Room'
+  | 'Suite Room'
+  | 'Family Room'
+  | 'Deluxe Suite'
+  | 'Presidential Suite'
+  | 'Economy Room'
+  | 'Luxury Room'
+  | 'Standard Room'
+  | 'Penthouse Suite'
+
+// Define Room type based on room.js
+interface Room {
+  id: string
+  name: string
+  status: 'Available' | 'Booked'
+  price: number
+  description: string
+  photo: string
+  rating: number
+  category: Category
+}
 
 const userStore = useUserStore()
 const router = useRouter()
 
-const searchQuery = ref('')
-const selectedCategory = ref('All')
-const showCategories = ref(false)
-const dropdownRef = ref(null)
+const searchQuery = ref<string>('')
+const selectedCategory = ref<string>('All') // Allow 'All' for dropdown
+const showCategories = ref<boolean>(false)
+const dropdownRef = ref<HTMLElement | null>(null)
 
-const categories = [
+const categories: Category[] = [
   'Single Room',
   'Double Room',
   'Suite Room',
@@ -151,19 +161,19 @@ const categories = [
   'Penthouse Suite',
 ]
 
-const rooms = ref([])
-const loading = ref(true)
-const error = ref(null)
+const rooms = ref<Room[]>([])
+const loading = ref<boolean>(true)
+const error = ref<string | null>(null)
 
 watch(
-  () => userStore.user,
-  (user) => {
-    if (!user) router.push('/login')
+  () => userStore.isAuthenticated,
+  (isAuthenticated: boolean) => {
+    if (!isAuthenticated) router.push('/login')
   },
   { immediate: true }
 )
 
-const filteredRooms = computed(() => {
+const filteredRooms = computed<Room[]>(() => {
   return rooms.value.filter((room) => {
     const matchesName = room.name.toLowerCase().includes(searchQuery.value.toLowerCase())
     const matchesCategory = selectedCategory.value === 'All' || room.category === selectedCategory.value
@@ -174,7 +184,7 @@ const filteredRooms = computed(() => {
 const fetchRooms = async () => {
   try {
     loading.value = true
-    const { data } = await useFetch('/api/rooms')
+    const { data } = await useFetch<Room[]>('/api/rooms')
     rooms.value = data.value || []
     error.value = null
   } catch (err) {
@@ -185,13 +195,20 @@ const fetchRooms = async () => {
   }
 }
 
-const handleCategoryClick = (category) => {
+const handleCategoryClick = (category: string) => {
   selectedCategory.value = category
   showCategories.value = false
 }
 
-const handleClickOutside = (event) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+const toggleCategories = async () => {
+  showCategories.value = !showCategories.value
+  if (showCategories.value) {
+    await nextTick() // Ensure DOM is updated before rendering dropdown
+  }
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
     showCategories.value = false
   }
 }
@@ -221,14 +238,17 @@ onUnmounted(() => {
   text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.2);
 }
 
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
 }
 
-.fade-slide-enter-from,
-.fade-slide-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
-  transform: translateY(-5px);
+}
+
+.will-change-opacity {
+  will-change: opacity;
 }
 </style>

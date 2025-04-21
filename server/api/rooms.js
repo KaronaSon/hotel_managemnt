@@ -485,7 +485,8 @@ export default defineEventHandler(async (event) => {
         price: base.price,
         description: base.description,
         photo: base.photo,
-        rating: base.rating
+        rating: base.rating,
+        category: base.category
       };
       rooms.push(room);
     }
