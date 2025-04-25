@@ -1,90 +1,63 @@
+<!-- components/common/RoomCard.vue -->
 <template>
   <div
-    class="room-card bg-white rounded-xl overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
-    @click="$emit('click')"
+    class="bg-white rounded-xl shadow-xl overflow-hidden transition-transform duration-300 hover:scale-105 cursor-pointer"
   >
-    <!-- Room Image with responsive height -->
-    <div class="relative w-full h-48 sm:h-56 lg:h-64">
-      <img
-        :src="photo"
-        :alt="name"
-        class="w-full h-full object-cover rounded-t-xl"
-        loading="lazy"
-      />
-      <!-- Rating Badge -->
-      <div class="absolute top-3 right-3 bg-indigo-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
-        {{ rating.toFixed(1) }} ★
-      </div>
-    </div>
-
-    <!-- Room Info -->
-    <div class="p-4 sm:p-5">
-      <h3 class="font-bold text-base sm:text-lg lg:text-xl text-gray-800 font-display truncate">{{ name }}</h3>
-      <p class="text-sm text-gray-600 mt-1 sm:mt-2 line-clamp-2">{{ description }}</p>
-
-      <!-- Rating Stars -->
-      <div class="flex items-center gap-1 text-yellow-400 my-2 sm:my-3">
-        <template v-for="i in 5" :key="i">
+    <img
+      :src="photo"
+      :alt="name"
+      class="w-full h-40 sm:h-48 md:h-56 object-cover max-w-full rounded-t-xl"
+      @click="$emit('image-click')"
+      loading="lazy"
+    />
+    <div class="p-3 sm:p-4 md:p-6">
+      <h3 class="text-base sm:text-lg md:text-xl font-display text-gray-800 truncate">{{ name }}</h3>
+      <p class="text-xs sm:text-sm md:text-base text-gray-600 mt-1 line-clamp-2">{{ description }}</p>
+      <div class="flex justify-between items-center mt-3 sm:mt-4">
+        <span class="text-base sm:text-lg md:text-xl font-sans text-indigo-600">${{ price }}/night</span>
+        <div class="flex items-center">
           <svg
-            v-if="i <= Math.floor(rating)"
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 sm:h-5 sm:w-5 fill-current"
+            v-for="i in 5"
+            :key="i"
+            class="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5"
+            :class="i <= Math.round(rating) ? 'text-yellow-400' : 'text-gray-300'"
+            fill="currentColor"
             viewBox="0 0 20 20"
-          >
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.2 3.685a1 1 0 00.95.69h3.862c.969 0 1.371 1.24.588 1.81l-3.125 2.273a1 1 0 00-.364 1.118l1.2 3.684c.3.922-.755 1.688-1.539 1.118L10 13.347l-3.123 2.273c-.784.57-1.838-.196-1.54-1.118l1.201-3.684a1 1 0 00-.364-1.118L3.05 9.112c-.782-.57-.38-1.81.588-1.81h3.863a1 1 0 00.95-.69l1.2-3.685z"/>
-          </svg>
-          <svg
-            v-else
             xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 sm:h-5 sm:w-5 text-gray-300"
-            viewBox="0 0 20 20"
           >
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.2 3.685a1 1 0 00.95.69h3.862c.969 0 1.371 1.24.588 1.81l-3.125 2.273a1 1 0 00-.364 1.118l1.2 3.684c.3.922-.755 1.688-1.539 1.118L10 13.347l-3.123 2.273c-.784.57-1.838-.196-1.54-1.118l1.201-3.684a1 1 0 00-.364-1.118L3.05 9.112c-.782-.57-.38-1.81.588-1.81h3.863a1 1 0 00.95-.69l1.2-3.685z"/>
+            <path
+              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+            />
           </svg>
-        </template>
+        </div>
       </div>
-
-      <!-- Price -->
-      <p class="mt-2 text-lg sm:text-xl font-semibold text-indigo-600">${{ price.toFixed(2) }} / night</p>
     </div>
   </div>
 </template>
 
 <script setup>
 defineProps({
-  id: { type: [String, Number], required: true },
-  name: { type: String, required: true },
-  price: { type: Number, required: true },
-  photo: { type: String, required: true },
-  description: { type: String, required: true },
-  rating: { type: Number, required: true },
-})
+  id: String,
+  name: String,
+  price: Number,
+  photo: String,
+  description: String,
+  rating: Number,
+});
 
-defineEmits(['click'])
+defineEmits(['image-click']);
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap');
-
-.font-display {
-  font-family: 'Playfair Display', serif;
-}
-
-.font-sans {
-  font-family: 'Inter', sans-serif;
-}
-
-.room-card {
-  border: none;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
 .line-clamp-2 {
-  overflow: hidden;
   display: -webkit-box;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2; /* Fallback for older browsers */
-  line-clamp: 2; /* Standard property for modern browsers */
+  overflow: hidden;
+}
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 </style>
