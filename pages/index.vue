@@ -1,4 +1,3 @@
-<!-- pages/index.vue -->
 <template>
   <div class="container mx-auto p-4 sm:p-6 md:p-8 lg:p-10 max-w-7xl">
     <!-- Main Content -->
@@ -37,6 +36,8 @@
               @click.stop="toggleCategories"
               class="w-full sm:w-auto text-gray-800 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-xl text-sm px-4 py-2.5 sm:px-6 sm:py-3 text-center inline-flex items-center justify-center shadow-sm transition duration-300"
               type="button"
+              aria-expanded="showCategories"
+              aria-controls="category-dropdown"
             >
               {{ selectedCategory }}
               <svg
@@ -58,6 +59,7 @@
             <transition name="fade">
               <div
                 v-show="showCategories"
+                id="category-dropdown"
                 class="absolute z-20 mt-2 bg-white divide-y divide-gray-100 rounded-xl shadow-xl w-full sm:w-72 min-w-[160px] max-w-[90vw] max-h-60 overflow-y-auto right-0 left-auto"
               >
                 <ul class="py-2 px-1 text-sm sm:text-base text-gray-800 font-sans">
@@ -99,17 +101,17 @@
             :photo="room.photo"
             :description="room.description"
             :rating="room.rating"
-            @image-click="openRoomModal(room)"
+            @click="openRoomModal(room)"
           />
         </div>
 
         <!-- Room Detail Modal -->
         <transition name="modal">
-          <div v-if="showRoomModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 sm:p-0">
-            <div class="bg-white rounded-xl shadow-xl w-full max-w-md sm:max-w-lg mx-4 sm:mx-0 p-6 max-h-[90vh] overflow-y-auto">
+          <div v-if="showRoomModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 sm:p-0" @keydown.esc="closeRoomModal">
+            <div class="bg-white rounded-xl shadow-xl w-full max-w-md sm:max-w-lg mx-4 sm:mx-0 p-6 max-h-[90vh] overflow-y-auto" role="dialog" aria-labelledby="room-modal-title">
               <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl sm:text-2xl font-display text-gray-800 truncate">{{ selectedRoom?.name }}</h2>
-                <button @click="closeRoomModal" class="text-gray-500 hover:text-gray-700">
+                <h2 id="room-modal-title" class="text-xl sm:text-2xl font-display text-gray-800 truncate">{{ selectedRoom?.name || 'Room Details' }}</h2>
+                <button @click="closeRoomModal" class="text-gray-500 hover:text-gray-700" aria-label="Close room details modal">
                   <svg
                     class="w-6 h-6"
                     xmlns="http://www.w3.org/2000/svg"
@@ -127,15 +129,18 @@
                 </button>
               </div>
               <img
-                :src="selectedRoom?.photo"
+                v-if="selectedRoom?.photo"
+                :src="selectedRoom.photo"
                 :alt="selectedRoom?.name"
                 class="w-full h-48 sm:h-64 object-cover rounded-xl mb-4 max-w-full"
                 loading="lazy"
+                decoding="async"
               />
-              <p class="text-sm sm:text-base text-gray-600 mb-2"><strong>Category:</strong> {{ selectedRoom?.category }}</p>
-              <p class="text-sm sm:text-base text-gray-600 mb-2"><strong>Description:</strong> {{ selectedRoom?.description }}</p>
-              <p class="text-sm sm:text-base text-gray-600 mb-2"><strong>Price:</strong> ${{ selectedRoom?.price }}/night</p>
-              <p class="text-sm sm:text-base text-gray-600 mb-2"><strong>Rating:</strong> {{ selectedRoom?.rating }}/5</p>
+              <p v-else class="text-gray-500 mb-4 text-center">No image available</p>
+              <p class="text-sm sm:text-base text-gray-600 mb-2"><strong>Category:</strong> {{ selectedRoom?.category || 'N/A' }}</p>
+              <p class="text-sm sm:text-base text-gray-600 mb-2"><strong>Description:</strong> {{ selectedRoom?.description || 'No description available' }}</p>
+              <p class="text-sm sm:text-base text-gray-600 mb-2"><strong>Price:</strong> ${{ selectedRoom?.price || 'N/A' }}/night</p>
+              <p class="text-sm sm:text-base text-gray-600 mb-2"><strong>Rating:</strong> {{ selectedRoom?.rating || 0 }}/5</p>
               <p class="text-sm sm:text-base mb-4">
                 <strong>Status:</strong>
                 <span
@@ -144,16 +149,16 @@
                     'font-medium'
                   ]"
                 >
-                  {{ selectedRoom?.status }}
+                  {{ selectedRoom?.status || 'Unknown' }}
                 </span>
               </p>
               <button
                 v-if="selectedRoom?.status === 'Available'"
-                @click="addToCart(selectedRoom)"
+                @click="goToBooking(selectedRoom)"
                 class="w-full bg-indigo-600 text-white rounded-xl py-3 px-4 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition duration-300 font-sans shadow-sm disabled:opacity-50"
-                :disabled="selectedRoom ? cartStore.isInCart(selectedRoom.id) : true"
+                :disabled="selectedRoom ? isRoomInCart(selectedRoom.id) : true"
               >
-                {{ selectedRoom && cartStore.isInCart(selectedRoom.id) ? 'Already in Cart' : 'Add to Cart' }}
+                {{ selectedRoom && isRoomInCart(selectedRoom.id) ? 'Already in Cart' : 'Book Now' }}
               </button>
               <button
                 v-else
@@ -176,6 +181,15 @@ import { useUserStore } from '~/stores/user';
 import { useRouter } from 'vue-router';
 import { useCartStore } from '~/stores/cart';
 import RoomCard from '~/components/common/RoomCard.vue';
+
+// Custom debounce function to avoid lodash dependency
+const debounce = (func, wait) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -212,6 +226,10 @@ watch(
   },
   { immediate: true }
 );
+
+const debouncedSearch = debounce((value) => {
+  searchQuery.value = value;
+}, 300);
 
 const filteredRooms = computed(() => {
   return rooms.value.filter((room) => {
@@ -263,20 +281,46 @@ const closeRoomModal = () => {
   selectedRoom.value = null;
 };
 
-const addToCart = (room) => {
-  if (room) {
-    cartStore.addToCart(room);
+// Fallback for cartStore.isInCart to avoid errors if undefined
+const isRoomInCart = (roomId) => {
+  try {
+    return cartStore.isInCart ? cartStore.isInCart(roomId) : false;
+  } catch (e) {
+    console.warn('cartStore.isInCart not available, defaulting to false', e);
+    return false;
+  }
+};
+
+const goToBooking = (room) => {
+  if (!room || !room.id) {
+    console.error('Invalid room or room.id for booking');
+    return;
+  }
+  try {
+    router.push({ path: `/booking/${room.id}`, state: { room } });
+    closeRoomModal();
+  } catch (err) {
+    console.error('Navigation to booking page failed:', err);
+    error.value = 'Failed to navigate to booking page. Please try again.';
   }
 };
 
 onMounted(() => {
   fetchRooms();
   document.addEventListener('click', handleClickOutside);
+  document.addEventListener('keydown', handleKeydown);
 });
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
+  document.removeEventListener('keydown', handleKeydown);
 });
+
+const handleKeydown = (event) => {
+  if (event.key === 'Escape' && showRoomModal.value) {
+    closeRoomModal();
+  }
+};
 </script>
 
 <style scoped>

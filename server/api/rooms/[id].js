@@ -1,5 +1,7 @@
 export default defineEventHandler(async(event) => {
-    console.log('Handling /api/rooms request');
+    const id = event.context.params.id;
+    console.log(`Handling /api/rooms/${id} request`);
+
     const rooms = [];
     const baseRooms = {
         'Single Room': [{
@@ -521,6 +523,15 @@ export default defineEventHandler(async(event) => {
         });
     }
 
-    console.log(`Returning ${rooms.length} rooms`);
-    return rooms;
+    const room = rooms.find((r) => r.id === id);
+    if (!room) {
+        console.log(`Room with ID ${id} not found`);
+        throw createError({
+            statusCode: 404,
+            statusMessage: `Room with ID ${id} not found`,
+        });
+    }
+
+    console.log(`Returning room with ID ${id}:`, room);
+    return room;
 });
